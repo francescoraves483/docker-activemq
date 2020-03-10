@@ -25,7 +25,9 @@ RUN tar xzf $ACTIVEMQ-bin.tar.gz -C  /opt && \
     chown -R activemq:activemq /opt/$ACTIVEMQ && \
     chown -h activemq:activemq $ACTIVEMQ_HOME && \
     apk del build-dependencies && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* && \
+    sed -i -E 's#^([[:blank:]]*<transportConnector name="amqp" uri="amqp://).*("/>)#\1${amqp.transport.connector}\2#' /opt/activemq/conf/activemq.xml && \
+    sed -i -E 's#^([[:blank:]]*ACTIVEMQ_OPTS="\$ACTIVEMQ_OPTS_MEMORY -Djava.util.logging.config.file=logging.properties -Djava.security.auth.login.config=\$ACTIVEMQ_CONF/login.config).*(")#\1 -Damqp.transport.connector=\\"${AMQP_TRANSP_CONN}\\"\2#' /opt/activemq/bin/env
 
 USER activemq
 
